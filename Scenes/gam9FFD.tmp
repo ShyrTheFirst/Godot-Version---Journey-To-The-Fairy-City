@@ -1,0 +1,101 @@
+[gd_scene load_steps=9 format=3 uid="uid://ca265efukpsd"]
+
+[ext_resource type="Script" path="res://Scenes/game_world.gd" id="1_24l4k"]
+[ext_resource type="PackedScene" uid="uid://dt5118104tt4" path="res://Scenes/player.tscn" id="1_vivws"]
+[ext_resource type="Script" path="res://Scripts/PlayerLife.gd" id="5_bg2jl"]
+[ext_resource type="Texture2D" uid="uid://2120pld8vihn" path="res://Assets/char_health_damage.png" id="5_y8tyc"]
+[ext_resource type="Texture2D" uid="uid://cdvxtto3iwgec" path="res://Assets/char_health_normal.png" id="6_jq2sl"]
+[ext_resource type="PackedScene" uid="uid://dr0a3c831i83r" path="res://Scenes/enemy.tscn" id="9_4s8wp"]
+[ext_resource type="PackedScene" uid="uid://dxpu3dbo2yv8k" path="res://Scenes/tree.tscn" id="9_8atlh"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_k1okp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_y8tyc")
+}],
+"loop": false,
+"name": &"damage",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_jq2sl")
+}],
+"loop": true,
+"name": &"main",
+"speed": 10.0
+}]
+
+[node name="GameWorld" type="Node"]
+script = ExtResource("1_24l4k")
+
+[node name="Player" parent="." instance=ExtResource("1_vivws")]
+unique_name_in_owner = true
+top_level = true
+light_mask = 3
+collision_layer = 3
+collision_priority = 0.0
+platform_wall_layers = 1
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+
+[node name="HUD Layer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="HUD Layer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -397.0
+offset_right = 399.0
+offset_bottom = 79.0
+grow_horizontal = 2
+
+[node name="PlayerLife" type="ColorRect" parent="HUD Layer/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -55.0
+offset_top = -30.0
+offset_right = 45.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("5_bg2jl")
+
+[node name="Timer" type="Timer" parent="HUD Layer/Panel/PlayerLife"]
+wait_time = 0.5
+one_shot = true
+
+[node name="AnimatedLifeHUD" type="AnimatedSprite2D" parent="HUD Layer/Panel"]
+position = Vector2(393, 43)
+scale = Vector2(1.04, 1.04)
+sprite_frames = SubResource("SpriteFrames_k1okp")
+animation = &"damage"
+
+[node name="Enemy2" parent="." instance=ExtResource("9_4s8wp")]
+texture_filter = 1
+position = Vector2(70, -57)
+collision_mask = 15
+platform_wall_layers = 1
+
+[node name="Enemy" parent="." instance=ExtResource("9_4s8wp")]
+position = Vector2(79, 173)
+collision_layer = 15
+collision_mask = 15
+platform_wall_layers = 1
+
+[node name="Tree" parent="." instance=ExtResource("9_8atlh")]
+position = Vector2(149, -76)
+
+[node name="Tree2" parent="." instance=ExtResource("9_8atlh")]
+position = Vector2(-37, -107)
+
+[node name="Tree3" parent="." instance=ExtResource("9_8atlh")]
+position = Vector2(63, -108)
+
+[connection signal="timeout" from="HUD Layer/Panel/PlayerLife/Timer" to="HUD Layer/Panel/PlayerLife" method="_on_timer_timeout"]
